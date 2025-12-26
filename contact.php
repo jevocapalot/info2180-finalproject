@@ -110,7 +110,7 @@ if ($current_type === 'Sales Lead') {
 <head>
     <meta charset="UTF-8">
     <title>Dolphin CRM - Contact</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 <header class="topbar">
@@ -223,118 +223,6 @@ if ($current_type === 'Sales Lead') {
         </section>
     </main>
 </div>
-
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    const form = document.getElementById('note-form');
-    const notesList = document.getElementById('notes-list');
-    const errorBox = document.getElementById('note-error');
-
-    if (form) {
-        form.addEventListener('submit', function (e) {
-            e.preventDefault();
-            errorBox.textContent = "";
-
-            const formData = new FormData(form);
-            fetch('add_note.php', {
-                method: 'POST',
-                body: formData
-            })
-                .then(res => res.json())
-                .then(data => {
-                    if (!data.success) {
-                        errorBox.textContent = data.error || 'Error adding note.';
-                        return;
-                    }
-                    const div = document.createElement('div');
-                    div.className = 'note';
-                    div.innerHTML = `
-                        <p>${escapeHtml(data.comment).replace(/\n/g, '<br>')}</p>
-                        <small>By ${escapeHtml(data.user_name)} on ${escapeHtml(data.created_at)}</small>
-                    `;
-                    notesList.insertBefore(div, notesList.firstChild);
-                    form.comment.value = "";
-                })
-                .catch(err => {
-                    console.error(err);
-                    errorBox.textContent = 'Network error.';
-                });
-        });
-    }
-
-    const assignBtn       = document.getElementById('assign-btn');
-    const toggleTypeBtn   = document.getElementById('toggle-type-btn');
-    const contactType     = document.getElementById('contact-type');
-    const assignedTo      = document.getElementById('contact-assigned-to');
-    const updatedAtSpan   = document.getElementById('contact-updated-at');
-    const contactId       = <?php echo (int)$contact_id; ?>;
-
-    if (assignBtn) {
-        assignBtn.addEventListener('click', function () {
-            const formData = new FormData();
-            formData.append('action', 'assign');
-            formData.append('contact_id', contactId);
-
-            fetch('contact_actions.php', {
-                method: 'POST',
-                body: formData
-            })
-                .then(res => res.json())
-                .then(data => {
-                    if (!data.success) {
-                        alert(data.error || 'Error assigning contact.');
-                        return;
-                    }
-                    assignedTo.textContent = data.assigned_to;
-                    updatedAtSpan.textContent = data.updated_at;
-                })
-                .catch(err => {
-                    console.error(err);
-                    alert('Network error assigning contact.');
-                });
-        });
-    }
-
-    if (toggleTypeBtn) {
-        toggleTypeBtn.addEventListener('click', function () {
-            const newType = toggleTypeBtn.getAttribute('data-new-type');
-
-            const formData = new FormData();
-            formData.append('action', 'toggle_type');
-            formData.append('contact_id', contactId);
-            formData.append('new_type', newType);
-
-            fetch('contact_actions.php', {
-                method: 'POST',
-                body: formData
-            })
-                .then(res => res.json())
-                .then(data => {
-                    if (!data.success) {
-                        alert(data.error || 'Error updating type.');
-                        return;
-                    }
-                    contactType.textContent = data.type;
-                    updatedAtSpan.textContent = data.updated_at;
-                    toggleTypeBtn.textContent = data.next_label;
-                    toggleTypeBtn.setAttribute('data-new-type', data.next_newType);
-                })
-                .catch(err => {
-                    console.error(err);
-                    alert('Network error updating type.');
-                });
-        });
-    }
-
-    function escapeHtml(str) {
-        return String(str)
-            .replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
-            .replace(/"/g, '&quot;')
-            .replace(/'/g, '&#39;');
-    }
-});
-</script>
+<script src="./app.js"></script> 
 </body>
 </html>

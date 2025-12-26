@@ -1,4 +1,6 @@
 /* ===== General Reset ===== */
+body { background: #ffdddd !important; }
+
 * {
     margin: 0;
     padding: 0;

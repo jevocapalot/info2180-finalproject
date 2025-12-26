@@ -40,19 +40,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <head>
     <meta charset="UTF-8">
     <title>Dolphin CRM - Login</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="css/style.css">
 </head>
 
 <body class="login-page">
-    <header class="topbar">
+    <header class="top-bar">
         <div class="topbar-logo">
             <span>🐬</span>
             Dolphin CRM
         </div>
     </header>
 
-    <main class="login-main">
-        <div class="login-card">
+    <main class="login-container">
+        <div class="login-form">
             <h2>Login</h2>
 
             <?php if ($error): ?>

@@ -60,7 +60,7 @@ $result = $stmt->get_result();
 <head>
     <meta charset="UTF-8">
     <title>Dolphin CRM - Dashboard</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="css/dashboard.css">
 </head>
 <body>
 <header class="topbar">
@@ -154,5 +154,6 @@ $result = $stmt->get_result();
         </section>
     </main>
 </div>
+<script src="app.js"></script>
 </body>
 </html>
