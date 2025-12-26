@@ -144,24 +144,23 @@ if ($current_type === 'Sales Lead') {
             <p>
                 Created on <?php echo htmlspecialchars($contact['created_at']); ?>
                 by <?php echo htmlspecialchars(trim($contact['creator_first'] . ' ' . $contact['creator_last'])); ?><br>
-                Last updated: <?php echo htmlspecialchars($contact['updated_at']); ?>
+                Last updated: <span id="contact-updated-at">
+                    <?php echo htmlspecialchars($contact['updated_at']); ?>
+                </span>
             </p>
         </div>
 
         <div class="buttons">
-            <!-- Assign to me -->
-            <form method="POST">
-                <input type="hidden" name="action" value="assign">
-                <button type="submit">Assign to me</button>
-            </form>
+            <button type="button" id="assign-btn">Assign to me</button>
 
-            <!-- Toggle type -->
-            <form method="POST">
-                <input type="hidden" name="action" value="toggle_type">
-                <input type="hidden" name="new_type" value="<?php echo htmlspecialchars($new_type); ?>">
-                <button type="submit"><?php echo htmlspecialchars($toggle_label); ?></button>
-            </form>
+            <button
+                type="button"
+                id="toggle-type-btn"
+                data-new-type="<?php echo htmlspecialchars($new_type); ?>">
+                <?php echo htmlspecialchars($toggle_label); ?>
+            </button>
         </div>
+
     </div>
 
     <dl>
@@ -175,10 +174,10 @@ if ($current_type === 'Sales Lead') {
         <dd><?php echo htmlspecialchars($contact['company']); ?></dd>
 
         <dt>Type</dt>
-        <dd><?php echo htmlspecialchars($contact['type']); ?></dd>
+        <dd id="contact-type"><?php echo htmlspecialchars($contact['type']); ?></dd>
 
         <dt>Assigned To</dt>
-        <dd>
+        <dd id="contact-assigned-to">
             <?php
             if ($contact['assignee_first']) {
                 echo htmlspecialchars($contact['assignee_first'] . ' ' . $contact['assignee_last']);
@@ -225,47 +224,114 @@ document.addEventListener('DOMContentLoaded', function () {
     const notesList = document.getElementById('notes-list');
     const errorBox = document.getElementById('note-error');
 
-    form.addEventListener('submit', function (e) {
-        e.preventDefault(); // stop normal form submit / page reload
+    if (form) {
+        form.addEventListener('submit', function (e) {
+            e.preventDefault();
 
-        errorBox.textContent = "";
+            errorBox.textContent = "";
 
-        const formData = new FormData(form);
+            const formData = new FormData(form);
 
-        fetch('add_note.php', {
-            method: 'POST',
-            body: formData
-        })
-        .then(res => res.json())
-        .then(data => {
-            if (!data.success) {
-                errorBox.textContent = data.error || 'Error adding note.';
-                return;
-            }
+            fetch('add_note.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (!data.success) {
+                    errorBox.textContent = data.error || 'Error adding note.';
+                    return;
+                }
 
-            // build a new note HTML block
-            const div = document.createElement('div');
-            div.className = 'note';
-            div.innerHTML = `
-                <p>${escapeHtml(data.comment).replace(/\n/g, '<br>')}</p>
-                <small>By ${escapeHtml(data.user_name)} on ${escapeHtml(data.created_at)}</small>
-            `;
+                const div = document.createElement('div');
+                div.className = 'note';
+                div.innerHTML = `
+                    <p>${escapeHtml(data.comment).replace(/\n/g, '<br>')}</p>
+                    <small>By ${escapeHtml(data.user_name)} on ${escapeHtml(data.created_at)}</small>
+                `;
 
-            // put new note at top
-            notesList.insertBefore(div, notesList.firstChild);
-
-            // clear textarea
-            form.comment.value = "";
-        })
-        .catch(err => {
-            console.error(err);
-            errorBox.textContent = 'Network error.';
+                notesList.insertBefore(div, notesList.firstChild);
+                form.comment.value = "";
+            })
+            .catch(err => {
+                console.error(err);
+                errorBox.textContent = 'Network error.';
+            });
         });
-    });
+    }
 
-    // Basic escape to avoid injecting HTML
+    /* ---------- Assign / Toggle Type AJAX ---------- */
+    const assignBtn       = document.getElementById('assign-btn');
+    const toggleTypeBtn   = document.getElementById('toggle-type-btn');
+    const contactType     = document.getElementById('contact-type');
+    const assignedTo      = document.getElementById('contact-assigned-to');
+    const updatedAtSpan   = document.getElementById('contact-updated-at');
+    const contactId       = <?php echo (int)$contact_id; ?>;
+
+    if (assignBtn) {
+        assignBtn.addEventListener('click', function () {
+            const formData = new FormData();
+            formData.append('action', 'assign');
+            formData.append('contact_id', contactId);
+
+            fetch('contact_actions.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (!data.success) {
+                    alert(data.error || 'Error assigning contact.');
+                    return;
+                }
+
+                assignedTo.textContent = data.assigned_to;
+                updatedAtSpan.textContent = data.updated_at;
+            })
+            .catch(err => {
+                console.error(err);
+                alert('Network error assigning contact.');
+            });
+        });
+    }
+
+    if (toggleTypeBtn) {
+        toggleTypeBtn.addEventListener('click', function () {
+            const newType = toggleTypeBtn.getAttribute('data-new-type');
+
+            const formData = new FormData();
+            formData.append('action', 'toggle_type');
+            formData.append('contact_id', contactId);
+            formData.append('new_type', newType);
+
+            fetch('contact_actions.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (!data.success) {
+                    alert(data.error || 'Error updating type.');
+                    return;
+                }
+
+                contactType.textContent = data.type;
+                updatedAtSpan.textContent = data.updated_at;
+
+                // Update button label 
+                toggleTypeBtn.textContent = data.next_label;
+                toggleTypeBtn.setAttribute('data-new-type', data.next_newType);
+            })
+            .catch(err => {
+                console.error(err);
+                alert('Network error updating type.');
+            });
+        });
+    }
+
+    /* ---------- Helper ---------- */
     function escapeHtml(str) {
-        return str
+        return String(str)
             .replace(/&/g, '&amp;')
             .replace(/</g, '&lt;')
             .replace(/>/g, '&gt;')
