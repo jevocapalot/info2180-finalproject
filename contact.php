@@ -109,114 +109,120 @@ if ($current_type === 'Sales Lead') {
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Contact Details - Dolphin CRM</title>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 20px; }
-        header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        nav a { margin-right: 10px; text-decoration: none; }
-        .contact-header { display: flex; justify-content: space-between; align-items: center; }
-        .buttons form { display: inline-block; margin-left: 10px; }
-        .notes { margin-top: 30px; }
-        .note { border-bottom: 1px solid #ddd; padding: 8px 0; }
-        textarea { width: 100%; min-height: 80px; }
-        button { padding: 6px 12px; margin-top: 6px; }
-        dt { font-weight: bold; }
-        dd { margin: 0 0 8px 0; }
-    </style>
+    <title>Dolphin CRM - Contact</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-
-<header>
-    <h1>Dolphin CRM</h1>
-    <nav>
-        <a href="dashboard.php">Home</a>
-        <a href="new_contact.php">New Contact</a>
-        <a href="logout.php">Logout</a>
-    </nav>
+<header class="topbar">
+    <div class="topbar-logo">
+        <span>🐬</span>
+        Dolphin CRM
+    </div>
 </header>
 
-<section class="contact-details">
-    <div class="contact-header">
-        <div>
-            <h2>
-                <?php echo htmlspecialchars(trim($contact['title'] . ' ' . $contact['firstname'] . ' ' . $contact['lastname'])); ?>
-            </h2>
-            <p>
-                Created on <?php echo htmlspecialchars($contact['created_at']); ?>
-                by <?php echo htmlspecialchars(trim($contact['creator_first'] . ' ' . $contact['creator_last'])); ?><br>
-                Last updated: <span id="contact-updated-at">
-                    <?php echo htmlspecialchars($contact['updated_at']); ?>
-                </span>
-            </p>
+<div class="app">
+    <aside class="sidebar">
+        <div class="sidebar-user">
+            Logged in as <?php echo htmlspecialchars($_SESSION['name'] ?? ''); ?>
+            (<?php echo htmlspecialchars($_SESSION['role'] ?? ''); ?>)
+        </div>
+        <nav>
+            <a href="dashboard.php" class="active-nav"><span class="icon">🏠</span> Home</a>
+            <a href="new_contact.php"><span class="icon">➕</span> New Contact</a>
+            <?php if (($_SESSION['role'] ?? '') === 'Admin'): ?>
+                <a href="users.php"><span class="icon">👥</span> Users</a>
+            <?php endif; ?>
+            <a href="logout.php"><span class="icon">⤴</span> Logout</a>
+        </nav>
+    </aside>
+
+    <main class="main">
+        <div class="main-header">
+            <h2>Contact</h2>
         </div>
 
-        <div class="buttons">
-            <button type="button" id="assign-btn">Assign to me</button>
+        <section class="card">
+            <div class="contact-header">
+                <div class="contact-name">
+                    <h2>
+                        <?php echo htmlspecialchars(trim($contact['title'].' '.$contact['firstname'].' '.$contact['lastname'])); ?>
+                    </h2>
+                    <div class="contact-meta">
+                        Created on <?php echo htmlspecialchars($contact['created_at']); ?>
+                        by <?php echo htmlspecialchars(trim($contact['creator_first'].' '.$contact['creator_last'])); ?>
+                        <br>
+                        Last updated:
+                        <span id="contact-updated-at">
+                            <?php echo htmlspecialchars($contact['updated_at']); ?>
+                        </span>
+                    </div>
+                </div>
 
-            <button
-                type="button"
-                id="toggle-type-btn"
-                data-new-type="<?php echo htmlspecialchars($new_type); ?>">
-                <?php echo htmlspecialchars($toggle_label); ?>
-            </button>
-        </div>
-
-    </div>
-
-    <dl>
-        <dt>Email</dt>
-        <dd><?php echo htmlspecialchars($contact['email']); ?></dd>
-
-        <dt>Telephone</dt>
-        <dd><?php echo htmlspecialchars($contact['telephone']); ?></dd>
-
-        <dt>Company</dt>
-        <dd><?php echo htmlspecialchars($contact['company']); ?></dd>
-
-        <dt>Type</dt>
-        <dd id="contact-type"><?php echo htmlspecialchars($contact['type']); ?></dd>
-
-        <dt>Assigned To</dt>
-        <dd id="contact-assigned-to">
-            <?php
-            if ($contact['assignee_first']) {
-                echo htmlspecialchars($contact['assignee_first'] . ' ' . $contact['assignee_last']);
-            } else {
-                echo "Unassigned";
-            }
-            ?>
-        </dd>
-    </dl>
-</section>
-
-<section class="notes">
-    <h3>Notes</h3>
-
-    <div id="notes-list">
-    <?php if ($notes->num_rows > 0): ?>
-        <?php while ($note = $notes->fetch_assoc()): ?>
-            <div class="note">
-                <p><?php echo nl2br(htmlspecialchars($note['comment'])); ?></p>
-                <small>
-                    By <?php echo htmlspecialchars($note['firstname'] . ' ' . $note['lastname']); ?>
-                    on <?php echo htmlspecialchars($note['created_at']); ?>
-                </small>
+                <div class="contact-actions">
+                    <button type="button" id="assign-btn">Assign to me</button>
+                    <button type="button"
+                            id="toggle-type-btn"
+                            data-new-type="<?php echo htmlspecialchars($new_type); ?>">
+                        <?php echo htmlspecialchars($toggle_label); ?>
+                    </button>
+                </div>
             </div>
-        <?php endwhile; ?>
-    <?php else: ?>
-        <p>No notes yet.</p>
-    <?php endif; ?>
-    </div>
 
-    
-    <h4>Add a note about this contact</h4>
-    <form id="note-form">
-        <textarea name="comment" required></textarea>
-        <input type="hidden" name="contact_id" value="<?php echo $contact_id; ?>">
-        <button type="submit">Add Note</button>
-    </form>
-    <p id="note-error" style="color:red;"></p>
-</section>
+            <dl>
+                <dt>Email</dt>
+                <dd><?php echo htmlspecialchars($contact['email']); ?></dd>
+
+                <dt>Telephone</dt>
+                <dd><?php echo htmlspecialchars($contact['telephone']); ?></dd>
+
+                <dt>Company</dt>
+                <dd><?php echo htmlspecialchars($contact['company']); ?></dd>
+
+                <dt>Type</dt>
+                <dd id="contact-type"><?php echo htmlspecialchars($contact['type']); ?></dd>
+
+                <dt>Assigned To</dt>
+                <dd id="contact-assigned-to">
+                    <?php
+                    if ($contact['assignee_first']) {
+                        echo htmlspecialchars($contact['assignee_first'].' '.$contact['assignee_last']);
+                    } else {
+                        echo "Unassigned";
+                    }
+                    ?>
+                </dd>
+            </dl>
+        </section>
+
+        <section class="card notes">
+            <h3>Notes</h3>
+
+            <div id="notes-list">
+                <?php if ($notes->num_rows > 0): ?>
+                    <?php while ($note = $notes->fetch_assoc()): ?>
+                        <div class="note">
+                            <p><?php echo nl2br(htmlspecialchars($note['comment'])); ?></p>
+                            <small>
+                                By <?php echo htmlspecialchars($note['firstname'].' '.$note['lastname']); ?>
+                                on <?php echo htmlspecialchars($note['created_at']); ?>
+                            </small>
+                        </div>
+                    <?php endwhile; ?>
+                <?php else: ?>
+                    <p>No notes yet.</p>
+                <?php endif; ?>
+            </div>
+
+            <h4 style="margin-top:12px;">Add a note about this contact</h4>
+            <form id="note-form">
+                <textarea name="comment" required></textarea>
+                <input type="hidden" name="contact_id" value="<?php echo $contact_id; ?>">
+                <button type="submit" style="margin-top:10px;">Add Note</button>
+            </form>
+            <p id="note-error" class="error"></p>
+        </section>
+    </main>
+</div>
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
@@ -227,40 +233,35 @@ document.addEventListener('DOMContentLoaded', function () {
     if (form) {
         form.addEventListener('submit', function (e) {
             e.preventDefault();
-
             errorBox.textContent = "";
 
             const formData = new FormData(form);
-
             fetch('add_note.php', {
                 method: 'POST',
                 body: formData
             })
-            .then(res => res.json())
-            .then(data => {
-                if (!data.success) {
-                    errorBox.textContent = data.error || 'Error adding note.';
-                    return;
-                }
-
-                const div = document.createElement('div');
-                div.className = 'note';
-                div.innerHTML = `
-                    <p>${escapeHtml(data.comment).replace(/\n/g, '<br>')}</p>
-                    <small>By ${escapeHtml(data.user_name)} on ${escapeHtml(data.created_at)}</small>
-                `;
-
-                notesList.insertBefore(div, notesList.firstChild);
-                form.comment.value = "";
-            })
-            .catch(err => {
-                console.error(err);
-                errorBox.textContent = 'Network error.';
-            });
+                .then(res => res.json())
+                .then(data => {
+                    if (!data.success) {
+                        errorBox.textContent = data.error || 'Error adding note.';
+                        return;
+                    }
+                    const div = document.createElement('div');
+                    div.className = 'note';
+                    div.innerHTML = `
+                        <p>${escapeHtml(data.comment).replace(/\n/g, '<br>')}</p>
+                        <small>By ${escapeHtml(data.user_name)} on ${escapeHtml(data.created_at)}</small>
+                    `;
+                    notesList.insertBefore(div, notesList.firstChild);
+                    form.comment.value = "";
+                })
+                .catch(err => {
+                    console.error(err);
+                    errorBox.textContent = 'Network error.';
+                });
         });
     }
 
-    /* ---------- Assign / Toggle Type AJAX ---------- */
     const assignBtn       = document.getElementById('assign-btn');
     const toggleTypeBtn   = document.getElementById('toggle-type-btn');
     const contactType     = document.getElementById('contact-type');
@@ -278,20 +279,19 @@ document.addEventListener('DOMContentLoaded', function () {
                 method: 'POST',
                 body: formData
             })
-            .then(res => res.json())
-            .then(data => {
-                if (!data.success) {
-                    alert(data.error || 'Error assigning contact.');
-                    return;
-                }
-
-                assignedTo.textContent = data.assigned_to;
-                updatedAtSpan.textContent = data.updated_at;
-            })
-            .catch(err => {
-                console.error(err);
-                alert('Network error assigning contact.');
-            });
+                .then(res => res.json())
+                .then(data => {
+                    if (!data.success) {
+                        alert(data.error || 'Error assigning contact.');
+                        return;
+                    }
+                    assignedTo.textContent = data.assigned_to;
+                    updatedAtSpan.textContent = data.updated_at;
+                })
+                .catch(err => {
+                    console.error(err);
+                    alert('Network error assigning contact.');
+                });
         });
     }
 
@@ -308,28 +308,24 @@ document.addEventListener('DOMContentLoaded', function () {
                 method: 'POST',
                 body: formData
             })
-            .then(res => res.json())
-            .then(data => {
-                if (!data.success) {
-                    alert(data.error || 'Error updating type.');
-                    return;
-                }
-
-                contactType.textContent = data.type;
-                updatedAtSpan.textContent = data.updated_at;
-
-                // Update button label 
-                toggleTypeBtn.textContent = data.next_label;
-                toggleTypeBtn.setAttribute('data-new-type', data.next_newType);
-            })
-            .catch(err => {
-                console.error(err);
-                alert('Network error updating type.');
-            });
+                .then(res => res.json())
+                .then(data => {
+                    if (!data.success) {
+                        alert(data.error || 'Error updating type.');
+                        return;
+                    }
+                    contactType.textContent = data.type;
+                    updatedAtSpan.textContent = data.updated_at;
+                    toggleTypeBtn.textContent = data.next_label;
+                    toggleTypeBtn.setAttribute('data-new-type', data.next_newType);
+                })
+                .catch(err => {
+                    console.error(err);
+                    alert('Network error updating type.');
+                });
         });
     }
 
-    /* ---------- Helper ---------- */
     function escapeHtml(str) {
         return String(str)
             .replace(/&/g, '&amp;')
@@ -340,6 +336,5 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 });
 </script>
-
 </body>
 </html>

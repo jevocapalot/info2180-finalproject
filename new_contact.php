@@ -65,90 +65,118 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     }
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>New Contact - Dolphin CRM</title>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 20px; }
-        header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        nav a { margin-right: 10px; text-decoration: none; }
-        form { max-width: 600px; }
-        label { display: block; margin-top: 10px; }
-        input, select, textarea { width: 100%; padding: 6px; margin-top: 4px; }
-        button { margin-top: 15px; padding: 8px 16px; }
-        .error { color: red; margin-top: 10px; }
-        .success { color: green; margin-top: 10px; }
-        .required { color: red; }
-    </style>
+    <title>Dolphin CRM - New Contact</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-
-<header>
-    <h1>New Contact</h1>
-    <nav>
-        <a href="dashboard.php">Dashboard</a>
-        <a href="logout.php">Logout</a>
-    </nav>
+<header class="topbar">
+    <div class="topbar-logo">
+        <span>🐬</span>
+        Dolphin CRM
+    </div>
 </header>
 
-<?php if ($error): ?>
-    <p class="error"><?php echo htmlspecialchars($error); ?></p>
-<?php endif; ?>
-
-<?php if ($success): ?>
-    <p class="success"><?php echo htmlspecialchars($success); ?></p>
-<?php endif; ?>
-
-<form method="POST" action="new_contact.php">
-    <label>Title
-        <input type="text" name="title" placeholder="Mr, Ms, Dr, etc.">
-    </label>
-
-    <label>First Name <span class="required">*</span>
-        <input type="text" name="firstname" required>
-    </label>
-
-    <label>Last Name <span class="required">*</span>
-        <input type="text" name="lastname" required>
-    </label>
-
-    <label>Email <span class="required">*</span>
-        <input type="email" name="email" required>
-    </label>
-
-    <label>Telephone
-        <input type="text" name="telephone">
-    </label>
-
-    <label>Company
-        <input type="text" name="company">
-    </label>
-
-    <label>Type <span class="required">*</span>
-        <select name="type" required>
-            <option value="">-- Select Type --</option>
-            <option value="Sales Lead">Sales Lead</option>
-            <option value="Support">Support</option>
-        </select>
-    </label>
-
-    <label>Assigned To <span class="required">*</span>
-        <select name="assigned_to" required>
-            <option value="">-- Select User --</option>
-            <?php if ($userResult && $userResult->num_rows > 0): ?>
-                <?php while ($u = $userResult->fetch_assoc()): ?>
-                    <option value="<?php echo $u['id']; ?>">
-                        <?php echo htmlspecialchars($u['firstname'] . " " . $u['lastname']); ?>
-                    </option>
-                <?php endwhile; ?>
+<div class="app">
+    <aside class="sidebar">
+        <div class="sidebar-user">
+            Logged in as <?php echo htmlspecialchars($_SESSION['name'] ?? ''); ?>
+            (<?php echo htmlspecialchars($_SESSION['role'] ?? ''); ?>)
+        </div>
+        <nav>
+            <a href="dashboard.php"><span class="icon">🏠</span> Home</a>
+            <a href="new_contact.php" class="active-nav"><span class="icon">➕</span> New Contact</a>
+            <?php if (($_SESSION['role'] ?? '') === 'Admin'): ?>
+                <a href="users.php"><span class="icon">👥</span> Users</a>
             <?php endif; ?>
-        </select>
-    </label>
+            <a href="logout.php"><span class="icon">⤴</span> Logout</a>
+        </nav>
+    </aside>
 
-    <button type="submit">Save Contact</button>
-</form>
+    <main class="main">
+        <div class="main-header">
+            <h2>New Contact</h2>
+        </div>
 
+        <section class="card">
+            <?php if ($error): ?>
+                <p class="error"><?php echo htmlspecialchars($error); ?></p>
+            <?php endif; ?>
+            <?php if ($success): ?>
+                <p class="success"><?php echo htmlspecialchars($success); ?></p>
+            <?php endif; ?>
+
+            <form method="POST" action="new_contact.php">
+                <div class="form-grid-2">
+                    <div>
+                        <label>Title
+                            <input type="text" name="title" placeholder="Mr, Ms, Dr, etc.">
+                        </label>
+                    </div>
+                    <div></div>
+
+                    <div>
+                        <label>First Name
+                            <input type="text" name="firstname" required>
+                        </label>
+                    </div>
+                    <div>
+                        <label>Last Name
+                            <input type="text" name="lastname" required>
+                        </label>
+                    </div>
+
+                    <div>
+                        <label>Email
+                            <input type="email" name="email" required>
+                        </label>
+                    </div>
+                    <div>
+                        <label>Telephone
+                            <input type="text" name="telephone">
+                        </label>
+                    </div>
+
+                    <div>
+                        <label>Company
+                            <input type="text" name="company">
+                        </label>
+                    </div>
+                    <div>
+                        <label>Type
+                            <select name="type" required>
+                                <option value="">-- Select Type --</option>
+                                <option value="Sales Lead">Sales Lead</option>
+                                <option value="Support">Support</option>
+                            </select>
+                        </label>
+                    </div>
+
+                    <div>
+                        <label>Assigned To
+                            <select name="assigned_to" required>
+                                <option value="">-- Select User --</option>
+                                <?php if ($userResult && $userResult->num_rows > 0): ?>
+                                    <?php while ($u = $userResult->fetch_assoc()): ?>
+                                        <option value="<?php echo $u['id']; ?>">
+                                            <?php echo htmlspecialchars($u['firstname'].' '.$u['lastname']); ?>
+                                        </option>
+                                    <?php endwhile; ?>
+                                <?php endif; ?>
+                            </select>
+                        </label>
+                    </div>
+                </div>
+
+                <button type="submit" style="margin-top:16px;">Save Contact</button>
+            </form>
+        </section>
+    </main>
+</div>
 </body>
 </html>
+

@@ -53,105 +53,106 @@ if (!empty($params)) {
 $stmt->execute();
 $result = $stmt->get_result();
 ?>
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Dolphin CRM - Dashboard</title>
-    <style>
-        /* super simple styling, can replace with your CSS later */
-        body { font-family: Arial, sans-serif; margin: 20px; }
-        header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        nav a { margin-right: 10px; text-decoration: none; }
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-        th, td { border: 1px solid #ddd; padding: 8px; }
-        th { background: #f4f4f4; text-align: left; }
-        .filters a { margin-right: 10px; }
-        .active-filter { font-weight: bold; text-decoration: underline; }
-    </style>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-
-<header>
-    <div>
-        <h1>Dolphin CRM</h1>
-        <p>Welcome, <?php echo htmlspecialchars($user_name); ?></p>
+<header class="topbar">
+    <div class="topbar-logo">
+        <span>🐬</span>
+        Dolphin CRM
     </div>
-    <nav>
-        <a href="dashboard.php">Home</a>
-        <a href="new_contact.php">New Contact</a> <!-- to be built -->
-        <a href="users.php">Users</a>             <!-- to be built -->
-        <a href="logout.php">Logout</a>           <!-- to be built -->
-    </nav>
 </header>
 
-<section>
-    <div style="display:flex; justify-content:space-between; align-items:center;">
-        <h2>Contacts</h2>
-        <a href="new_contact.php">
-            <button type="button">Add New Contact</button>
-        </a>
-    </div>
+<div class="app">
+    <aside class="sidebar">
+        <div class="sidebar-user">
+            Logged in as <?php echo htmlspecialchars($_SESSION['name'] ?? ''); ?>
+            (<?php echo htmlspecialchars($_SESSION['role'] ?? ''); ?>)
+        </div>
+        <nav>
+            <a href="dashboard.php" class="active-nav"><span class="icon">🏠</span> Home</a>
+            <a href="new_contact.php"><span class="icon">➕</span> New Contact</a>
+            <?php if (($_SESSION['role'] ?? '') === 'Admin'): ?>
+                <a href="users.php"><span class="icon">👥</span> Users</a>
+            <?php endif; ?>
+            <a href="logout.php"><span class="icon">⤴</span> Logout</a>
+        </nav>
+    </aside>
 
-    <div class="filters">
-        <span>Filter by: </span>
-        <a href="dashboard.php?filter=all"
-           class="<?php echo ($filter === 'all') ? 'active-filter' : ''; ?>">All Contacts</a>
+    <main class="main">
+        <div class="main-header">
+            <h2>Dashboard</h2>
+            <a href="new_contact.php" class="button">+ Add Contact</a>
+        </div>
 
-        <a href="dashboard.php?filter=sales"
-           class="<?php echo ($filter === 'sales') ? 'active-filter' : ''; ?>">Sales Leads</a>
+        <section class="card">
+            <div class="filters">
+                <span>Filter by:</span>
+                <div class="filter-links">
+                    <a href="dashboard.php?filter=all"
+                       class="<?php echo ($filter === 'all') ? 'active-filter' : ''; ?>">All</a>
+                    <a href="dashboard.php?filter=sales"
+                       class="<?php echo ($filter === 'sales') ? 'active-filter' : ''; ?>">Sales Leads</a>
+                    <a href="dashboard.php?filter=support"
+                       class="<?php echo ($filter === 'support') ? 'active-filter' : ''; ?>">Support</a>
+                    <a href="dashboard.php?filter=assigned"
+                       class="<?php echo ($filter === 'assigned') ? 'active-filter' : ''; ?>">Assigned to me</a>
+                </div>
+            </div>
 
-        <a href="dashboard.php?filter=support"
-           class="<?php echo ($filter === 'support') ? 'active-filter' : ''; ?>">Support</a>
-
-        <a href="dashboard.php?filter=assigned"
-           class="<?php echo ($filter === 'assigned') ? 'active-filter' : ''; ?>">Assigned to me</a>
-    </div>
-
-    <table>
-        <thead>
-            <tr>
-                <th>Title & Name</th>
-                <th>Email</th>
-                <th>Company</th>
-                <th>Type</th>
-                <th>Assigned To</th>
-                <th>View</th>
-            </tr>
-        </thead>
-        <tbody>
-        <?php if ($result->num_rows > 0): ?>
-            <?php while ($row = $result->fetch_assoc()): ?>
+            <table>
+                <thead>
                 <tr>
-                    <td>
-                        <?php
-                            echo htmlspecialchars(trim($row['title'] . ' ' . $row['firstname'] . ' ' . $row['lastname']));
-                        ?>
-                    </td>
-                    <td><?php echo htmlspecialchars($row['email']); ?></td>
-                    <td><?php echo htmlspecialchars($row['company']); ?></td>
-                    <td><?php echo htmlspecialchars($row['type']); ?></td>
-                    <td>
-                        <?php
-                            if ($row['assigned_firstname']) {
-                                echo htmlspecialchars($row['assigned_firstname'] . ' ' . $row['assigned_lastname']);
-                            } else {
-                                echo 'Unassigned';
-                            }
-                        ?>
-                    </td>
-                    <td>
-                        <a href="contact.php?id=<?php echo $row['id']; ?>">View</a>
-                        <!-- contact.php will show full details -->
-                    </td>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Company</th>
+                    <th>Type</th>
+                    <th>Assigned To</th>
+                    <th></th>
                 </tr>
-            <?php endwhile; ?>
-        <?php else: ?>
-            <tr><td colspan="6">No contacts found.</td></tr>
-        <?php endif; ?>
-        </tbody>
-    </table>
-</section>
-
+                </thead>
+                <tbody>
+                <?php if ($result->num_rows > 0): ?>
+                    <?php while ($row = $result->fetch_assoc()): ?>
+                        <tr>
+                            <td><?php echo htmlspecialchars(trim($row['title'].' '.$row['firstname'].' '.$row['lastname'])); ?></td>
+                            <td><?php echo htmlspecialchars($row['email']); ?></td>
+                            <td><?php echo htmlspecialchars($row['company']); ?></td>
+                            <td>
+                                <?php
+                                $type = $row['type'];
+                                $badgeClass = $type === 'Support' ? 'badge-support' : 'badge-sales';
+                                ?>
+                                <span class="badge <?php echo $badgeClass; ?>">
+                                    <?php echo strtoupper($type); ?>
+                                </span>
+                            </td>
+                            <td>
+                                <?php
+                                if ($row['assigned_firstname']) {
+                                    echo htmlspecialchars($row['assigned_firstname'].' '.$row['assigned_lastname']);
+                                } else {
+                                    echo 'Unassigned';
+                                }
+                                ?>
+                            </td>
+                            <td><a href="contact.php?id=<?php echo $row['id']; ?>">View</a></td>
+                        </tr>
+                    <?php endwhile; ?>
+                <?php else: ?>
+                    <tr><td colspan="6">No contacts found.</td></tr>
+                <?php endif; ?>
+                </tbody>
+            </table>
+        </section>
+    </main>
+</div>
 </body>
 </html>
