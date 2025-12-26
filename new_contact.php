@@ -71,7 +71,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 <head>
     <meta charset="UTF-8">
     <title>Dolphin CRM - New Contact</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 <header class="topbar">
@@ -177,6 +177,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         </section>
     </main>
 </div>
+<script src="app.js"></script>
 </body>
 </html>
 

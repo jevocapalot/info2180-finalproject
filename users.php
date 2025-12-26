@@ -86,7 +86,7 @@ $userResult = $conn->query($userSql);
 <head>
     <meta charset="UTF-8">
     <title>Dolphin CRM - Users</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 <header class="topbar">
@@ -194,5 +194,6 @@ $userResult = $conn->query($userSql);
         </section>
     </main>
 </div>
+<script src="app.js"></script>
 </body>
 </html>
