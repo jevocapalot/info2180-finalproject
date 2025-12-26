@@ -1,0 +1,203 @@
+/* ===== General Reset ===== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* ===== Top Bar ===== */
+.top-bar {
+    width: 100%;
+    background-color: #000;
+    color: #fff;
+    padding: 1rem 2rem;
+}
+
+.top-bar h1 {
+    font-size: 1.5rem;
+}
+
+/* ===== Page Layout ===== */
+body {
+    background-color: #f4f4f4;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.page-container {
+    display: flex;
+    flex: 1;
+    min-height: calc(100vh - 60px);
+}
+
+/* ===== Sidebar ===== */
+.sidebar {
+    width: 180px;
+    padding: 2rem 1rem;
+    background-color: #f9f9f9;
+}
+
+.sidebar ul {
+    list-style: none;
+}
+
+.sidebar ul li {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.sidebar ul li i {
+    font-size: 1.2rem;
+}
+
+/* ===== Main Content ===== */
+.main-content {
+    flex: 1;
+    padding: 2rem;
+}
+
+.page-title {
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+}
+
+/* ===== Box with Filters and Table ===== */
+.form-box {
+    background-color: #fff;
+    border-radius: 8px;
+    padding: 2rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+/* ===== Filters ===== */
+.filters {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.filters span {
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.filters button {
+    background-color: transparent;
+    border: none;
+    padding: 0.3rem 0.5rem;
+    font-weight: bold;
+    cursor: pointer;
+    color: #333;
+    transition: all 0.2s ease;
+}
+
+.filters button:hover,
+.filters button.active {
+    text-decoration: underline;
+    color: #523df2;
+}
+
+/* ===== Add User Button ===== */
+.users-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.add-user-btn {
+    padding: 0.6rem 1.2rem;
+    background-color: #523df2;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.add-user-btn:hover {
+    background-color: #333;
+}
+
+/* ===== Users Table ===== */
+.users-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.users-table th,
+.users-table td {
+    padding: 1rem;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+.users-table th {
+    background-color: #f4f4f4;
+    font-weight: bold;
+}
+
+/* Alternate row colors */
+.users-table tr:nth-child(even) {
+    background-color: #fafafa;
+}
+
+/* Highlight Type text only */
+.type-sales {
+    background-color: #f5de2e; /* yellow box */
+    color: #fff;               /* white text */
+    font-weight: bold;
+    padding: 0.2rem 0.5rem;
+    border-radius: 5px;
+    display: inline-block;
+}
+
+.type-support {
+   background-color: #3807cc; /* purple box */
+    color: #fff;               /* white text */
+    font-weight: bold;
+    padding: 0.2rem 0.5rem;
+    border-radius: 5px;
+    display: inline-block;
+}
+
+/* View link */
+.view-link {
+    color: #523df2;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.view-link:hover {
+    text-decoration: underline;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 768px) {
+    .page-container {
+        flex-direction: column;
+    }
+
+    .sidebar {
+        width: 100%;
+        display: flex;
+        justify-content: space-around;
+        padding: 1rem;
+    }
+
+    .filters {
+        justify-content: flex-start;
+        gap: 0.3rem;
+    }
+}
