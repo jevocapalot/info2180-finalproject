@@ -80,112 +80,119 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 $userSql = "SELECT id, firstname, lastname, email, role, created_at FROM users ORDER BY created_at DESC";
 $userResult = $conn->query($userSql);
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Users - Dolphin CRM</title>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 20px; }
-        header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        nav a { margin-right: 10px; text-decoration: none; }
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-        th, td { border: 1px solid #ddd; padding: 8px; }
-        th { background: #f4f4f4; text-align: left; }
-        form { max-width: 500px; margin-top: 20px; }
-        label { display: block; margin-top: 10px; }
-        input, select { width: 100%; padding: 6px; margin-top: 4px; }
-        button { margin-top: 15px; padding: 8px 16px; }
-        .error { color: red; margin-top: 10px; }
-        .success { color: green; margin-top: 10px; }
-    </style>
+    <title>Dolphin CRM - Users</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-
-<header>
-    <div>
-        <h1>Dolphin CRM</h1>
-        <p>Logged in as <?php echo htmlspecialchars($user_name); ?> (<?php echo htmlspecialchars($user_role); ?>)</p>
+<header class="topbar">
+    <div class="topbar-logo">
+        <span>🐬</span>
+        Dolphin CRM
     </div>
-    <nav>
-        <a href="dashboard.php">Dashboard</a>
-        <a href="new_contact.php">New Contact</a>
-        <a href="users.php">Users</a>
-        <a href="logout.php">Logout</a>
-    </nav>
 </header>
 
-<section>
-    <h2>Users</h2>
+<div class="app">
+    <aside class="sidebar">
+        <div class="sidebar-user">
+            Logged in as <?php echo htmlspecialchars($_SESSION['name'] ?? ''); ?>
+            (<?php echo htmlspecialchars($_SESSION['role'] ?? ''); ?>)
+        </div>
+        <nav>
+            <a href="dashboard.php"><span class="icon">🏠</span> Home</a>
+            <a href="new_contact.php"><span class="icon">➕</span> New Contact</a>
+            <a href="users.php" class="active-nav"><span class="icon">👥</span> Users</a>
+            <a href="logout.php"><span class="icon">⤴</span> Logout</a>
+        </nav>
 
-    <table>
-        <thead>
-            <tr>
-                <th>Full Name</th>
-                <th>Email</th>
-                <th>Role</th>
-                <th>Created At</th>
-            </tr>
-        </thead>
-        <tbody>
-        <?php if ($userResult && $userResult->num_rows > 0): ?>
-            <?php while ($u = $userResult->fetch_assoc()): ?>
+    </aside>
+
+    <main class="main">
+        <div class="main-header">
+            <h2>Users</h2>
+            <!-- Optional: you already have add-user form below -->
+        </div>
+
+        <section class="card">
+            <table>
+                <thead>
                 <tr>
-                    <td><?php echo htmlspecialchars($u['firstname'] . ' ' . $u['lastname']); ?></td>
-                    <td><?php echo htmlspecialchars($u['email']); ?></td>
-                    <td><?php echo htmlspecialchars($u['role']); ?></td>
-                    <td><?php echo htmlspecialchars($u['created_at']); ?></td>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Created</th>
                 </tr>
-            <?php endwhile; ?>
-        <?php else: ?>
-            <tr><td colspan="4">No users found.</td></tr>
-        <?php endif; ?>
-        </tbody>
-    </table>
-</section>
+                </thead>
+                <tbody>
+                <?php if ($userResult && $userResult->num_rows > 0): ?>
+                    <?php while ($u = $userResult->fetch_assoc()): ?>
+                        <tr>
+                            <td><?php echo htmlspecialchars($u['firstname'].' '.$u['lastname']); ?></td>
+                            <td><?php echo htmlspecialchars($u['email']); ?></td>
+                            <td><?php echo htmlspecialchars($u['role']); ?></td>
+                            <td><?php echo htmlspecialchars($u['created_at']); ?></td>
+                        </tr>
+                    <?php endwhile; ?>
+                <?php else: ?>
+                    <tr><td colspan="4">No users found.</td></tr>
+                <?php endif; ?>
+                </tbody>
+            </table>
+        </section>
 
-<section>
-    <h2>Add New User</h2>
+        <section class="card" style="margin-top:18px;">
+            <h3 style="margin-bottom:8px;">Add New User</h3>
 
-    <?php if ($error): ?>
-        <p class="error"><?php echo htmlspecialchars($error); ?></p>
-    <?php endif; ?>
+            <?php if ($error): ?>
+                <p class="error"><?php echo htmlspecialchars($error); ?></p>
+            <?php endif; ?>
+            <?php if ($success): ?>
+                <p class="success"><?php echo htmlspecialchars($success); ?></p>
+            <?php endif; ?>
 
-    <?php if ($success): ?>
-        <p class="success"><?php echo htmlspecialchars($success); ?></p>
-    <?php endif; ?>
+            <form method="POST" action="users.php">
+                <div class="form-grid-2">
+                    <div>
+                        <label>First Name
+                            <input type="text" name="firstname" required>
+                        </label>
+                    </div>
+                    <div>
+                        <label>Last Name
+                            <input type="text" name="lastname" required>
+                        </label>
+                    </div>
 
-    <form method="POST" action="users.php">
-        <label>First Name
-            <input type="text" name="firstname" required>
-        </label>
+                    <div>
+                        <label>Email
+                            <input type="email" name="email" required>
+                        </label>
+                    </div>
+                    <div>
+                        <label>Password
+                            <input type="password" name="password" required>
+                        </label>
+                    </div>
 
-        <label>Last Name
-            <input type="text" name="lastname" required>
-        </label>
+                    <div>
+                        <label>Role
+                            <select name="role" required>
+                                <option value="">-- Select Role --</option>
+                                <option value="Admin">Admin</option>
+                                <option value="Member">Member</option>
+                            </select>
+                        </label>
+                    </div>
+                </div>
 
-        <label>Email
-            <input type="email" name="email" required>
-        </label>
-
-        <label>Password
-            <input type="password" name="password" required>
-        </label>
-        <small>
-            Password must be at least 8 characters, with upper & lowercase letters and a number.
-        </small>
-
-        <label>Role
-            <select name="role" required>
-                <option value="">-- Select Role --</option>
-                <option value="Admin">Admin</option>
-                <option value="Member">Member</option>
-            </select>
-        </label>
-
-        <button type="submit">Create User</button>
-    </form>
-</section>
-
+                <button type="submit" style="margin-top:16px;">Save User</button>
+            </form>
+        </section>
+    </main>
+</div>
 </body>
 </html>

@@ -1,3 +1,5 @@
+
+
 <?php
 session_start();
 require 'config.php';
@@ -36,23 +38,44 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <!DOCTYPE html>
 <html>
 <head>
+    <meta charset="UTF-8">
     <title>Dolphin CRM - Login</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
-<body>
 
-<h2>Login</h2>
+<body class="login-page">
+    <header class="topbar">
+        <div class="topbar-logo">
+            <span>🐬</span>
+            Dolphin CRM
+        </div>
+    </header>
 
-<form method="POST">
-    <label>Email</label>
-    <input type="email" name="email" required><br>
+    <main class="login-main">
+        <div class="login-card">
+            <h2>Login</h2>
 
-    <label>Password</label>
-    <input type="password" name="password" required><br>
+            <?php if ($error): ?>
+                <p class="error"><?php echo htmlspecialchars($error); ?></p>
+            <?php endif; ?>
 
-    <button type="submit">Login</button>
-</form>
+            <form method="POST">
+                <label>Email address
+                    <input type="email" name="email" required>
+                </label>
 
-<p style="color:red;"><?php echo $error; ?></p>
+                <label>Password
+                    <input type="password" name="password" required>
+                </label>
 
+                <button type="submit">
+                    🔐 Login
+                </button>
+            </form>
+        </div>
+    </main>
+
+    <footer class="login-footer">
+        Copyright © <?php echo date('Y'); ?> Dolphin CRM
+    </footer>
 </body>
-</html>
