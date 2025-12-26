@@ -71,7 +71,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 <head>
     <meta charset="UTF-8">
     <title>Dolphin CRM - New Contact</title>
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
 <header class="topbar">
@@ -88,12 +89,12 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             (<?php echo htmlspecialchars($_SESSION['role'] ?? ''); ?>)
         </div>
         <nav>
-            <a href="dashboard.php"><span class="icon">🏠</span> Home</a>
-            <a href="new_contact.php" class="active-nav"><span class="icon">➕</span> New Contact</a>
+            <a href="dashboard.php"><i class="fa-solid fa-house"></i> Home</a>
+            <a href="new_contact.php" class="active-nav"><i class="fa-solid fa-user-plus"></i> New Contact</a>
             <?php if (($_SESSION['role'] ?? '') === 'Admin'): ?>
-                <a href="users.php"><span class="icon">👥</span> Users</a>
+                <a href="users.php"><i class="fa-solid fa-users"></i> Users</a>
             <?php endif; ?>
-            <a href="logout.php"><span class="icon">⤴</span> Logout</a>
+            <a href="logout.php"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
         </nav>
     </aside>
 
@@ -111,68 +112,70 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             <?php endif; ?>
 
             <form method="POST" action="new_contact.php">
+                
+                <div style="margin-bottom: 1.5rem; width: 200px;">
+                    <label>Title</label>
+                    <select name="title">
+                        <option value="Mr">Mr</option>
+                        <option value="Mrs">Mrs</option>
+                        <option value="Ms">Ms</option>
+                        <option value="Dr">Dr</option>
+                        <option value="Prof">Prof</option>
+                    </select>
+                </div>
+
                 <div class="form-grid-2">
                     <div>
-                        <label>Title
-                            <input type="text" name="title" placeholder="Mr, Ms, Dr, etc.">
-                        </label>
-                    </div>
-                    <div></div>
-
-                    <div>
-                        <label>First Name
-                            <input type="text" name="firstname" required>
-                        </label>
+                        <label>First Name</label>
+                        <input type="text" name="firstname" placeholder="Jane" required>
                     </div>
                     <div>
-                        <label>Last Name
-                            <input type="text" name="lastname" required>
-                        </label>
-                    </div>
-
-                    <div>
-                        <label>Email
-                            <input type="email" name="email" required>
-                        </label>
-                    </div>
-                    <div>
-                        <label>Telephone
-                            <input type="text" name="telephone">
-                        </label>
-                    </div>
-
-                    <div>
-                        <label>Company
-                            <input type="text" name="company">
-                        </label>
-                    </div>
-                    <div>
-                        <label>Type
-                            <select name="type" required>
-                                <option value="">-- Select Type --</option>
-                                <option value="Sales Lead">Sales Lead</option>
-                                <option value="Support">Support</option>
-                            </select>
-                        </label>
-                    </div>
-
-                    <div>
-                        <label>Assigned To
-                            <select name="assigned_to" required>
-                                <option value="">-- Select User --</option>
-                                <?php if ($userResult && $userResult->num_rows > 0): ?>
-                                    <?php while ($u = $userResult->fetch_assoc()): ?>
-                                        <option value="<?php echo $u['id']; ?>">
-                                            <?php echo htmlspecialchars($u['firstname'].' '.$u['lastname']); ?>
-                                        </option>
-                                    <?php endwhile; ?>
-                                <?php endif; ?>
-                            </select>
-                        </label>
+                        <label>Last Name</label>
+                        <input type="text" name="lastname" placeholder="Doe" required>
                     </div>
                 </div>
 
-                <button type="submit" style="margin-top:16px;">Save Contact</button>
+                <div class="form-grid-2">
+                    <div>
+                        <label>Email</label>
+                        <input type="email" name="email" placeholder="something@example.com" required>
+                    </div>
+                    <div>
+                        <label>Telephone</label>
+                        <input type="text" name="telephone">
+                    </div>
+                </div>
+
+                <div class="form-grid-2">
+                    <div>
+                        <label>Company</label>
+                        <input type="text" name="company">
+                    </div>
+                    <div>
+                        <label>Type</label>
+                        <select name="type" required>
+                            <option value="Sales Lead">Sales Lead</option>
+                            <option value="Support">Support</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 1.5rem;">
+                    <label>Assigned To</label>
+                    <select name="assigned_to" required>
+                        <?php if ($userResult && $userResult->num_rows > 0): ?>
+                            <?php while ($u = $userResult->fetch_assoc()): ?>
+                                <option value="<?php echo $u['id']; ?>">
+                                    <?php echo htmlspecialchars($u['firstname'].' '.$u['lastname']); ?>
+                                </option>
+                            <?php endwhile; ?>
+                        <?php endif; ?>
+                    </select>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn-save">Save</button>
+                </div>
             </form>
         </section>
     </main>

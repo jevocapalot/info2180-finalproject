@@ -110,7 +110,8 @@ if ($current_type === 'Sales Lead') {
 <head>
     <meta charset="UTF-8">
     <title>Dolphin CRM - Contact</title>
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
 <header class="topbar">
@@ -127,85 +128,95 @@ if ($current_type === 'Sales Lead') {
             (<?php echo htmlspecialchars($_SESSION['role'] ?? ''); ?>)
         </div>
         <nav>
-            <a href="dashboard.php" class="active-nav"><span class="icon">🏠</span> Home</a>
-            <a href="new_contact.php"><span class="icon">➕</span> New Contact</a>
+            <a href="dashboard.php" class="active-nav"><i class="fa-solid fa-house"></i> Home</a>
+            <a href="new_contact.php"><i class="fa-solid fa-user-plus"></i> New Contact</a>
             <?php if (($_SESSION['role'] ?? '') === 'Admin'): ?>
-                <a href="users.php"><span class="icon">👥</span> Users</a>
+                <a href="users.php"><i class="fa-solid fa-users"></i> Users</a>
             <?php endif; ?>
-            <a href="logout.php"><span class="icon">⤴</span> Logout</a>
+            <a href="logout.php"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
         </nav>
     </aside>
 
     <main class="main">
-        <div class="main-header">
-            <h2>Contact</h2>
-        </div>
-
-        <section class="card">
-            <div class="contact-header">
-                <div class="contact-name">
-                    <h2>
+        <input type="hidden" name="contact_id" value="<?php echo $contact_id; ?>">
+        
+        <!-- Header Section -->
+        <div class="contact-header">
+            <div class="contact-info">
+                <div class="contact-avatar">
+                    <i class="fa-solid fa-user-circle"></i>
+                </div>
+                <div class="contact-text">
+                    <h1>
                         <?php echo htmlspecialchars(trim($contact['title'].' '.$contact['firstname'].' '.$contact['lastname'])); ?>
-                    </h2>
+                    </h1>
                     <div class="contact-meta">
-                        Created on <?php echo htmlspecialchars($contact['created_at']); ?>
+                        Created on <?php echo date("F j, Y", strtotime($contact['created_at'])); ?>
                         by <?php echo htmlspecialchars(trim($contact['creator_first'].' '.$contact['creator_last'])); ?>
                         <br>
-                        Last updated:
-                        <span id="contact-updated-at">
-                            <?php echo htmlspecialchars($contact['updated_at']); ?>
-                        </span>
+                        Updated on <span id="contact-updated-at"><?php echo date("F j, Y", strtotime($contact['updated_at'])); ?></span>
                     </div>
-                </div>
-
-                <div class="contact-actions">
-                    <button type="button" id="assign-btn">Assign to me</button>
-                    <button type="button"
-                            id="toggle-type-btn"
-                            data-new-type="<?php echo htmlspecialchars($new_type); ?>">
-                        <?php echo htmlspecialchars($toggle_label); ?>
-                    </button>
                 </div>
             </div>
 
-            <dl>
-                <dt>Email</dt>
-                <dd><?php echo htmlspecialchars($contact['email']); ?></dd>
+            <div class="contact-actions">
+                <button type="button" id="assign-btn" class="btn-assign">
+                    <i class="fa-solid fa-hand"></i> Assign to me
+                </button>
+                <button type="button" id="toggle-type-btn" class="btn-switch"
+                        data-new-type="<?php echo htmlspecialchars($new_type); ?>">
+                    <i class="fa-solid fa-right-left"></i> <?php echo htmlspecialchars($toggle_label); ?>
+                </button>
+            </div>
+        </div>
 
-                <dt>Telephone</dt>
-                <dd><?php echo htmlspecialchars($contact['telephone']); ?></dd>
-
-                <dt>Company</dt>
-                <dd><?php echo htmlspecialchars($contact['company']); ?></dd>
-
-                <dt>Type</dt>
-                <dd id="contact-type"><?php echo htmlspecialchars($contact['type']); ?></dd>
-
-                <dt>Assigned To</dt>
-                <dd id="contact-assigned-to">
-                    <?php
-                    if ($contact['assignee_first']) {
-                        echo htmlspecialchars($contact['assignee_first'].' '.$contact['assignee_last']);
-                    } else {
-                        echo "Unassigned";
-                    }
-                    ?>
-                </dd>
-            </dl>
+        <!-- Details Card -->
+        <section class="card details-box">
+            <div class="details-grid">
+                <div>
+                    <label>Email</label>
+                    <p><?php echo htmlspecialchars($contact['email']); ?></p>
+                </div>
+                <div>
+                    <label>Telephone</label>
+                    <p><?php echo htmlspecialchars($contact['telephone']); ?></p>
+                </div>
+                <div>
+                    <label>Company</label>
+                    <p><?php echo htmlspecialchars($contact['company']); ?></p>
+                </div>
+                <div>
+                    <label>Type</label>
+                    <p id="contact-type"><?php echo htmlspecialchars($contact['type']); ?></p>
+                </div>
+                <div>
+                    <label>Assigned To</label>
+                    <p id="contact-assigned-to">
+                        <?php
+                        if ($contact['assignee_first']) {
+                            echo htmlspecialchars($contact['assignee_first'].' '.$contact['assignee_last']);
+                        } else {
+                            echo "Unassigned";
+                        }
+                        ?>
+                    </p>
+                </div>
+            </div>
         </section>
 
-        <section class="card notes">
-            <h3>Notes</h3>
+        <!-- Notes Section -->
+        <section class="card notes-section">
+            <div class="notes-header">
+                <h3><i class="fa-solid fa-pen-to-square"></i> Notes</h3>
+            </div>
 
-            <div id="notes-list">
+            <div id="notes-list" class="notes-content">
                 <?php if ($notes->num_rows > 0): ?>
                     <?php while ($note = $notes->fetch_assoc()): ?>
-                        <div class="note">
-                            <p><?php echo nl2br(htmlspecialchars($note['comment'])); ?></p>
-                            <small>
-                                By <?php echo htmlspecialchars($note['firstname'].' '.$note['lastname']); ?>
-                                on <?php echo htmlspecialchars($note['created_at']); ?>
-                            </small>
+                        <div class="note-entry">
+                            <div class="note-author"><?php echo htmlspecialchars($note['firstname'].' '.$note['lastname']); ?></div>
+                            <div class="note-text"><?php echo nl2br(htmlspecialchars($note['comment'])); ?></div>
+                            <div class="note-date"><?php echo date("F j, Y \a\\t g:ia", strtotime($note['created_at'])); ?></div>
                         </div>
                     <?php endwhile; ?>
                 <?php else: ?>
@@ -213,13 +224,17 @@ if ($current_type === 'Sales Lead') {
                 <?php endif; ?>
             </div>
 
-            <h4 style="margin-top:12px;">Add a note about this contact</h4>
-            <form id="note-form">
-                <textarea name="comment" required></textarea>
-                <input type="hidden" name="contact_id" value="<?php echo $contact_id; ?>">
-                <button type="submit" style="margin-top:10px;">Add Note</button>
-            </form>
-            <p id="note-error" class="error"></p>
+            <div class="add-note">
+                <h4 class="add-note-title">Add a note about <?php echo htmlspecialchars($contact['firstname']); ?></h4>
+                <form id="note-form">
+                    <textarea name="comment" placeholder="Enter details here" required></textarea>
+                    <input type="hidden" name="contact_id" value="<?php echo $contact_id; ?>">
+                    <div style="text-align: right;">
+                        <button type="submit" class="btn-add-note">Add Note</button>
+                    </div>
+                </form>
+                <p id="note-error" class="error"></p>
+            </div>
         </section>
     </main>
 </div>

@@ -41,6 +41,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <meta charset="UTF-8">
     <title>Dolphin CRM - Login</title>
     <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 
 <body class="login-page">
@@ -60,22 +61,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <?php endif; ?>
 
             <form method="POST">
-                <label>Email address
-                    <input type="email" name="email" required>
-                </label>
-
-                <label>Password
-                    <input type="password" name="password" required>
-                </label>
+                <input type="email" name="email" placeholder="Email address" required>
+                <input type="password" name="password" placeholder="Password" required>
 
                 <button type="submit">
-                    🔐 Login
+                    <i class="fa fa-lock"></i> Login
                 </button>
             </form>
         </div>
     </main>
 
     <footer class="login-footer">
-        Copyright © <?php echo date('Y'); ?> Dolphin CRM
+        Copyright &copy; <?php echo date('Y'); ?> Dolphin CRM
     </footer>
+    <script src="app.js"></script>
 </body>
+</html>

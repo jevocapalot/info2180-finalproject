@@ -61,6 +61,7 @@ $result = $stmt->get_result();
     <meta charset="UTF-8">
     <title>Dolphin CRM - Dashboard</title>
     <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
 <header class="topbar">
@@ -77,12 +78,12 @@ $result = $stmt->get_result();
             (<?php echo htmlspecialchars($_SESSION['role'] ?? ''); ?>)
         </div>
         <nav>
-            <a href="dashboard.php" class="active-nav"><span class="icon">🏠</span> Home</a>
-            <a href="new_contact.php"><span class="icon">➕</span> New Contact</a>
+            <a href="dashboard.php" class="active-nav"><i class="fa-solid fa-house"></i> Home</a>
+            <a href="new_contact.php"><i class="fa-solid fa-user-plus"></i> New Contact</a>
             <?php if (($_SESSION['role'] ?? '') === 'Admin'): ?>
-                <a href="users.php"><span class="icon">👥</span> Users</a>
+                <a href="users.php"><i class="fa-solid fa-users"></i> Users</a>
             <?php endif; ?>
-            <a href="logout.php"><span class="icon">⤴</span> Logout</a>
+            <a href="logout.php"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
         </nav>
     </aside>
 
@@ -94,7 +95,7 @@ $result = $stmt->get_result();
 
         <section class="card">
             <div class="filters">
-                <span>Filter by:</span>
+                <span><i class="fa-solid fa-filter"></i> Filter By:</span>
                 <div class="filter-links">
                     <a href="dashboard.php?filter=all"
                        class="<?php echo ($filter === 'all') ? 'active-filter' : ''; ?>">All</a>
@@ -114,7 +115,6 @@ $result = $stmt->get_result();
                     <th>Email</th>
                     <th>Company</th>
                     <th>Type</th>
-                    <th>Assigned To</th>
                     <th></th>
                 </tr>
                 </thead>
@@ -122,7 +122,7 @@ $result = $stmt->get_result();
                 <?php if ($result->num_rows > 0): ?>
                     <?php while ($row = $result->fetch_assoc()): ?>
                         <tr>
-                            <td><?php echo htmlspecialchars(trim($row['title'].' '.$row['firstname'].' '.$row['lastname'])); ?></td>
+                            <td><strong><?php echo htmlspecialchars(trim($row['title'].' '.$row['firstname'].' '.$row['lastname'])); ?></strong></td>
                             <td><?php echo htmlspecialchars($row['email']); ?></td>
                             <td><?php echo htmlspecialchars($row['company']); ?></td>
                             <td>
@@ -134,20 +134,11 @@ $result = $stmt->get_result();
                                     <?php echo strtoupper($type); ?>
                                 </span>
                             </td>
-                            <td>
-                                <?php
-                                if ($row['assigned_firstname']) {
-                                    echo htmlspecialchars($row['assigned_firstname'].' '.$row['assigned_lastname']);
-                                } else {
-                                    echo 'Unassigned';
-                                }
-                                ?>
-                            </td>
-                            <td><a href="contact.php?id=<?php echo $row['id']; ?>">View</a></td>
+                            <td><a href="contact.php?id=<?php echo $row['id']; ?>" class="view-link">View</a></td>
                         </tr>
                     <?php endwhile; ?>
                 <?php else: ?>
-                    <tr><td colspan="6">No contacts found.</td></tr>
+                    <tr><td colspan="5">No contacts found.</td></tr>
                 <?php endif; ?>
                 </tbody>
             </table>

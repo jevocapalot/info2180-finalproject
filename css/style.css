@@ -38,40 +38,41 @@ body {
 
 /* Login form card */
  .login-form {
-    background-color:transparent;
+    background-color: transparent;
     padding: 2rem;
-    border-radius:0;
-    box-shadow:none;
+    border-radius: 0;
+    box-shadow: none;
     width: 100%;
-    max-width: 400px;
+    max-width: 350px; /* Slightly narrower to match wireframe */
 }
 
 .login-form h2 {
     color: #000;
-    margin-bottom: 1.5rem;
+    margin-bottom: 2rem;
     text-align: center;
-}
-
-/* Form styling */
-.login-form label {
-    display: block;
-    margin-bottom: 0.3rem;
+    font-size: 2rem;
     font-weight: bold;
 }
 
+/* Form styling */
 .login-form input {
     width: 100%;
-    padding: 0.6rem;
-    margin-bottom: 1rem;
+    padding: 0.8rem;
+    margin-bottom: 1.2rem;
     border: 1px solid #ccc;
     border-radius: 5px;
     font-size: 1rem;
+    background-color: #fff;
+}
+
+.login-form input::placeholder {
+    color: #888;
 }
 
 /* Login button with lock icon */
 .login-form button {
     width: 100%;
-    padding: 0.6rem;
+    padding: 0.8rem;
     background-color: #523df2;
     color: #fff;
     border: none;
@@ -83,20 +84,23 @@ body {
     justify-content: center;
     gap: 0.5rem;
     cursor: pointer;
+    transition: background-color 0.3s;
 }
 
 .login-form button:hover {
-    background-color: #333;
+    background-color: #3e2bc2;
 }
 
 /* Footer */
 footer {
-    width: 100%;
-    background-color: #f4f4f4;
+    width: 60%;
+    margin: 0 auto;
+    background-color: transparent;
     text-align: center;
-    padding: 1rem;
+    padding: 2rem 0;
     font-size: 0.9rem;
     color: #555;
+    border-top: 1px solid #e0e0e0;
 }
 
 /* Page layout */
@@ -510,8 +514,4 @@ footer {
 .note-date {
     font-size: 0.85rem;
     color: #777;
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> dolphinwork

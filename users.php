@@ -18,64 +18,6 @@ if ($user_role !== 'Admin') {
     die("Access denied. Admins only.");
 }
 
-$error = "";
-$success = "";
-
-// Handle form submit to add user
-if ($_SERVER["REQUEST_METHOD"] === "POST") {
-    $firstname = trim($_POST['firstname'] ?? '');
-    $lastname  = trim($_POST['lastname'] ?? '');
-    $email     = trim($_POST['email'] ?? '');
-    $password  = $_POST['password'] ?? '';
-    $role      = $_POST['role'] ?? '';
-
-    // Basic validation
-    if ($firstname === "" || $lastname === "" || $email === "" || $password === "" || $role === "") {
-        $error = "Please fill in all fields.";
-    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        $error = "Please enter a valid email address.";
-    } elseif (!in_array($role, ['Admin', 'Member'])) {
-        $error = "Invalid role.";
-    } else {
-        // Password rules:
-        // at least 8 chars, at least one uppercase, one lowercase, one digit
-        $passwordErrors = [];
-
-        if (strlen($password) < 8) {
-            $passwordErrors[] = "at least 8 characters";
-        }
-        if (!preg_match('/[A-Z]/', $password)) {
-            $passwordErrors[] = "at least one uppercase letter";
-        }
-        if (!preg_match('/[a-z]/', $password)) {
-            $passwordErrors[] = "at least one lowercase letter";
-        }
-        if (!preg_match('/[0-9]/', $password)) {
-            $passwordErrors[] = "at least one digit";
-        }
-
-        if (!empty($passwordErrors)) {
-            $error = "Password must contain " . implode(", ", $passwordErrors) . ".";
-        } else {
-            // Hash password
-            $hashed = password_hash($password, PASSWORD_DEFAULT);
-
-            // Insert user
-            $sql = "INSERT INTO users (firstname, lastname, email, password, role, created_at)
-                    VALUES (?, ?, ?, ?, ?, NOW())";
-            $stmt = $conn->prepare($sql);
-            $stmt->bind_param("sssss", $firstname, $lastname, $email, $hashed, $role);
-
-            if ($stmt->execute()) {
-                $success = "User added successfully.";
-            } else {
-                // Most likely duplicate email
-                $error = "Failed to add user. Email may already be taken.";
-            }
-        }
-    }
-}
-
 // Get all users for listing
 $userSql = "SELECT id, firstname, lastname, email, role, created_at FROM users ORDER BY created_at DESC";
 $userResult = $conn->query($userSql);
@@ -86,7 +28,8 @@ $userResult = $conn->query($userSql);
 <head>
     <meta charset="UTF-8">
     <title>Dolphin CRM - Users</title>
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
 <header class="topbar">
@@ -103,10 +46,10 @@ $userResult = $conn->query($userSql);
             (<?php echo htmlspecialchars($_SESSION['role'] ?? ''); ?>)
         </div>
         <nav>
-            <a href="dashboard.php"><span class="icon">🏠</span> Home</a>
-            <a href="new_contact.php"><span class="icon">➕</span> New Contact</a>
-            <a href="users.php" class="active-nav"><span class="icon">👥</span> Users</a>
-            <a href="logout.php"><span class="icon">⤴</span> Logout</a>
+            <a href="dashboard.php"><i class="fa-solid fa-house"></i> Home</a>
+            <a href="new_contact.php"><i class="fa-solid fa-user-plus"></i> New Contact</a>
+            <a href="users.php" class="active-nav"><i class="fa-solid fa-users"></i> Users</a>
+            <a href="logout.php"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
         </nav>
 
     </aside>
@@ -114,7 +57,7 @@ $userResult = $conn->query($userSql);
     <main class="main">
         <div class="main-header">
             <h2>Users</h2>
-            <!-- Optional: you already have add-user form below -->
+            <a href="add_user.php" class="button">+ Add User</a>
         </div>
 
         <section class="card">
@@ -131,7 +74,7 @@ $userResult = $conn->query($userSql);
                 <?php if ($userResult && $userResult->num_rows > 0): ?>
                     <?php while ($u = $userResult->fetch_assoc()): ?>
                         <tr>
-                            <td><?php echo htmlspecialchars($u['firstname'].' '.$u['lastname']); ?></td>
+                            <td><strong><?php echo htmlspecialchars($u['firstname'].' '.$u['lastname']); ?></strong></td>
                             <td><?php echo htmlspecialchars($u['email']); ?></td>
                             <td><?php echo htmlspecialchars($u['role']); ?></td>
                             <td><?php echo htmlspecialchars($u['created_at']); ?></td>
@@ -142,55 +85,6 @@ $userResult = $conn->query($userSql);
                 <?php endif; ?>
                 </tbody>
             </table>
-        </section>
-
-        <section class="card" style="margin-top:18px;">
-            <h3 style="margin-bottom:8px;">Add New User</h3>
-
-            <?php if ($error): ?>
-                <p class="error"><?php echo htmlspecialchars($error); ?></p>
-            <?php endif; ?>
-            <?php if ($success): ?>
-                <p class="success"><?php echo htmlspecialchars($success); ?></p>
-            <?php endif; ?>
-
-            <form method="POST" action="users.php">
-                <div class="form-grid-2">
-                    <div>
-                        <label>First Name
-                            <input type="text" name="firstname" required>
-                        </label>
-                    </div>
-                    <div>
-                        <label>Last Name
-                            <input type="text" name="lastname" required>
-                        </label>
-                    </div>
-
-                    <div>
-                        <label>Email
-                            <input type="email" name="email" required>
-                        </label>
-                    </div>
-                    <div>
-                        <label>Password
-                            <input type="password" name="password" required>
-                        </label>
-                    </div>
-
-                    <div>
-                        <label>Role
-                            <select name="role" required>
-                                <option value="">-- Select Role --</option>
-                                <option value="Admin">Admin</option>
-                                <option value="Member">Member</option>
-                            </select>
-                        </label>
-                    </div>
-                </div>
-
-                <button type="submit" style="margin-top:16px;">Save User</button>
-            </form>
         </section>
     </main>
 </div>
