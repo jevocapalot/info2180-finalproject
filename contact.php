@@ -193,6 +193,7 @@ if ($current_type === 'Sales Lead') {
 <section class="notes">
     <h3>Notes</h3>
 
+    <div id="notes-list">
     <?php if ($notes->num_rows > 0): ?>
         <?php while ($note = $notes->fetch_assoc()): ?>
             <div class="note">
@@ -206,14 +207,73 @@ if ($current_type === 'Sales Lead') {
     <?php else: ?>
         <p>No notes yet.</p>
     <?php endif; ?>
+    </div>
 
+    
     <h4>Add a note about this contact</h4>
-    <form method="POST">
-        <input type="hidden" name="action" value="add_note">
+    <form id="note-form">
         <textarea name="comment" required></textarea>
+        <input type="hidden" name="contact_id" value="<?php echo $contact_id; ?>">
         <button type="submit">Add Note</button>
     </form>
+    <p id="note-error" style="color:red;"></p>
 </section>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const form = document.getElementById('note-form');
+    const notesList = document.getElementById('notes-list');
+    const errorBox = document.getElementById('note-error');
+
+    form.addEventListener('submit', function (e) {
+        e.preventDefault(); // stop normal form submit / page reload
+
+        errorBox.textContent = "";
+
+        const formData = new FormData(form);
+
+        fetch('add_note.php', {
+            method: 'POST',
+            body: formData
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (!data.success) {
+                errorBox.textContent = data.error || 'Error adding note.';
+                return;
+            }
+
+            // build a new note HTML block
+            const div = document.createElement('div');
+            div.className = 'note';
+            div.innerHTML = `
+                <p>${escapeHtml(data.comment).replace(/\n/g, '<br>')}</p>
+                <small>By ${escapeHtml(data.user_name)} on ${escapeHtml(data.created_at)}</small>
+            `;
+
+            // put new note at top
+            notesList.insertBefore(div, notesList.firstChild);
+
+            // clear textarea
+            form.comment.value = "";
+        })
+        .catch(err => {
+            console.error(err);
+            errorBox.textContent = 'Network error.';
+        });
+    });
+
+    // Basic escape to avoid injecting HTML
+    function escapeHtml(str) {
+        return str
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+    }
+});
+</script>
 
 </body>
 </html>
